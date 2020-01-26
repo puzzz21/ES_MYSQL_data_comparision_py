@@ -3,6 +3,7 @@ import mysql.connector
 from MySQLdb._mysql import Error
 from collections import defaultdict
 from operator import itemgetter
+import es
 
 mydb = mysql.connector.connect(
     host="localhost",
@@ -18,7 +19,7 @@ def fetchData():
         ficitional = cursor.fetchall()
         c = "Lew"
         cursor.execute("SELECT * FROM books.nonfictional where writer LIKE '%s'" % ("%" + c + "%"))
-        nonfictional = cursor. fetchall()
+        nonfictional = cursor.fetchall()
         print("nonfict: ", nonfictional)
         books = ficitional + nonfictional
         dist = defaultdict(list)
@@ -31,11 +32,22 @@ def fetchData():
                 dist[key].append(i)
 
         print(dist)
+        for key in dist:
+            print("data", dist.get(key))
+            comparisionWithES(key, dist.get(key))
+
 
     except Error as e:
         print(e)
     finally:
         cursor.close()
+
+def comparisionWithES(key, sqlData):
+    esData = es.ESData(key)
+
+
+
+
 
 if __name__ == '__main__':
     fetchData()
